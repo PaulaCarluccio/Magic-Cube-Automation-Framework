@@ -1,0 +1,4 @@
+#Lista de nombres de las cartas
+
+ej:
+boros-elite
