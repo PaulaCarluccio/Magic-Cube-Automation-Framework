@@ -34,9 +34,12 @@ def load_card_names(file_path):
         print(f"Error al cargar nombres de cartas: {e}")
         return []
 
-def save_card_image(card_name, image_url, save_directory="images"):
-    os.makedirs(save_directory, exist_ok=True)
-    image_path = os.path.join(save_directory, f"{card_name}.png")
+def save_card_image(card_name, image_url, color_category, base_directory="images"):
+    # Crear directorio por color
+    color_directory = os.path.join(base_directory, color_category)
+    os.makedirs(color_directory, exist_ok=True)
+
+    image_path = os.path.join(color_directory, f"{card_name}.png")
     try:
         response = requests.get(image_url, timeout=TIMEOUT)
         response.raise_for_status()
@@ -53,19 +56,6 @@ total_tests = 0
 passed_tests = 0
 failed_tests = 0
 
-def save_pie_chart(passed_tests, failed_tests):
-    sizes = [passed_tests, failed_tests]
-    labels = ['Passed', 'Failed']
-    colors = ['green', 'red']
-    
-    if sizes and any(sizes):
-        plt.pie(sizes, explode=(0, 0.1), labels=labels, colors=colors,
-                autopct='%1.1f%%', shadow=True, startangle=90)
-        plt.axis('equal')
-        plt.savefig('reports/test_results.png')
-    else:
-        print("No hay datos para generar el gráfico de pastel.")
-
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_logreport(report):
     global passed_tests, failed_tests
@@ -74,9 +64,6 @@ def pytest_runtest_logreport(report):
             passed_tests += 1
         elif report.failed:
             failed_tests += 1
-
-def pytest_sessionfinish(session, exitstatus):
-    save_pie_chart(passed_tests, failed_tests)
 
 def pytest_terminal_summary(terminalreporter, exitstatus):
     terminalreporter.write_sep("=", "Resultados de las pruebas")
