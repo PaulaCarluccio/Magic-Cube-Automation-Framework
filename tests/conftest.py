@@ -26,13 +26,19 @@ class APIClient:
 def api_client():
     return APIClient()
 
-def load_card_names(file_path):
+def load_card_colors(file_path):
+    """Carga los nombres de cartas y sus categorías de color desde un archivo CSV."""
     try:
         with open(file_path, 'r') as file:
-            return [line.strip() for line in file if line.strip()]
+            card_colors = {}
+            for line in file:
+                if line.strip():
+                    name, color = line.strip().split(',')
+                    card_colors[name.strip()] = color.strip()
+            return card_colors
     except Exception as e:
-        print(f"Error al cargar nombres de cartas: {e}")
-        return []
+        print(f"Error al cargar colores de cartas: {e}")
+        return {}
 
 def save_card_image(card_name, image_url, color_category, base_directory="images"):
     # Crear directorio por color

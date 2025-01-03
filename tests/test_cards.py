@@ -1,8 +1,9 @@
 import pytest
-from conftest import load_card_names, save_card_image
+from conftest import load_card_colors, save_card_image
 import allure
 
-card_names = load_card_names('tests/ThePauperCube.csv')
+card_colors = load_card_colors('tests/ThePauperCube.csv')
+card_names = list(card_colors.keys())
 
 @pytest.mark.parametrize("card_name", card_names)
 @allure.feature("Card Retrieval")
@@ -17,8 +18,8 @@ def test_get_specific_card(api_client, card_name, request):
 
     image_url = response_data["image_uris"]["png"]
     
-    # Obtener la categoría de color (por ejemplo, 'w' para blanco)
-    color_category = response_data.get("color_identity", ["unknown"])[0]  # Usamos el primer color de la lista
+    # Obtener la categoría de color desde el archivo CSV
+    color_category = card_colors.get(card_name, "unknown")  # Usamos "unknown" si no se encuentra el color
 
     image_path = save_card_image(card_name, image_url, color_category)
 
